@@ -8,7 +8,7 @@ const bip39 = require("bip39");
 const bip32 = require("ripple-bip32");
 const ripple = require('ripple-keypairs')
 const fs = require('fs')
-const words = fs.readFileSync('words.txt').toString('utf-8').trim().split(`\n`).slice(0, 10)
+const words = fs.readFileSync('words.txt').toString('utf-8').trim().split(`\n`)
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
