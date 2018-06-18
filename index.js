@@ -12,12 +12,10 @@ const words = fs.readFileSync('words.txt').toString('utf-8').trim().split(`\n`)
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-const m2a = (mnemonic) => {
-  const seed = bip39.mnemonicToSeed(mnemonic.trim().toLowerCase()) // add second argument for 25th word encrypted
-  const m = bip32.fromSeedBuffer(seed)
-  const keyPair = m.derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs()
-  const address = ripple.deriveAddress(keyPair.publicKey)
-  return address
+const m2a = (mnemonic, passphrase) => {
+  const seed = bip39.mnemonicToSeed(mnemonic, passphrase)
+  const keyPair = bip32.fromSeedBuffer(seed).derivePath("m/44'/144'/0'/0/0").keyPair.getKeyPairs()
+  return ripple.deriveAddress(keyPair.publicKey)
 }
 
 let mmsplit = erroneousMnemonic.toLowerCase().trim().split(' ')
@@ -29,13 +27,9 @@ for (let i = 0; i < loopLength; i++) {
   let a = mmsplit.slice(mmcount < requiredWords ? i : i + 1)
   words.forEach((word, j) => {
     let o = (b.join(' ') + ' ' + word + ' ' + a.join(' ')).trim()
-    let m = m2a(o)
+    let m = m2a(o) // add second argument for 25th word encrypted
     if (m === expectedAccount) {
-      console.log('')
-      console.log('MATCH! RECOVERED :D')
-      console.log(m)
-      console.log(o)
-      console.log('')
+      console.log(`\nMATCH! RECOVERED :D\n${m}\n${o}\n\n`)
       process.exit(0)
     } else {
       console.log(i + '.' + j + ' ' + m + ' @ ' + o)
@@ -43,10 +37,5 @@ for (let i = 0; i < loopLength; i++) {
   })
 }
 
-console.log('')
-console.log('')
-console.log('No results :(')
-console.log('')
-console.log('')
-
+console.log(`\n\nNo results :(\n\n`)
 process.exit(1)
